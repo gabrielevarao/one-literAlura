@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "autores")
@@ -27,7 +28,6 @@ public class Autor {
         this.nome = autor.nome();
         this.anoNascimento = autor.anoNascimento();
         this.anoFalecimento = autor.anoFalecimento();
-
     }
 
     public String getNome() {
@@ -60,5 +60,13 @@ public class Autor {
 
     public void setLivros(List<Livro> livros) {
         this.livros = livros;
+    }
+
+    @Override
+    public String toString() {
+        return "\n--------------AUTOR------------------" +
+                " \n-> Autor = " + nome +
+                " \n-> Ano de nascimento = " + anoNascimento +
+                " \n-> Ano de falecimento = " + anoFalecimento;
     }
 }

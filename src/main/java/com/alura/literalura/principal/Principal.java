@@ -11,6 +11,7 @@ import com.alura.literalura.service.ConsumoApi;
 import com.alura.literalura.service.ConversorDeDados;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -65,15 +66,14 @@ public class Principal {
                     buscarLivroCadastrado();
                     break;
 
+                case 3:
+                    listarLivrosCadastrados();
+                    break;
 
-//                case 3:
-//                    listarLivrosCadastrados();
-//                    break;
-//
-//                case 4:
-//                    listarAutoresCadastrados();
-//                    break;
-//
+                case 4:
+                    listarAutoresCadastrados();
+                    break;
+
 //                case 5:
 //                    listarAutoresPorAnoNascimento();
 //                    break;
@@ -89,10 +89,8 @@ public class Principal {
                 default:
                     System.out.println("Opção inválida.");
             }
-
         }
     }
-
 
     private void cadastrarNovoLivro() {
         LivroDTO livroDTO = getResultsApi().livros().get(0);
@@ -103,11 +101,12 @@ public class Principal {
         Livro livro = new Livro(livroDTO);
         livro.setAutor(autor);
         livroRepository.save(livro);
+        System.out.println(livro);
 
     }
 
     private ResultsDTO getResultsApi(){
-        System.out.println("Digite o título do livro que deseja cadastrar.");
+        System.out.println("\nDigite o título do livro que deseja cadastrar.");
         String tituloLivro = scanner.nextLine().replace(" ", "%20");
         System.out.println(ENDERECO + tituloLivro);
         var json = consumoApi.obterDadosApi(ENDERECO + tituloLivro);
@@ -116,19 +115,39 @@ public class Principal {
     }
 
     private void buscarLivroCadastrado(){
-        System.out.println("Digite o título do livro para busca.");
+        System.out.println("\nDigite o título do livro para busca.");
         String titulo = scanner.nextLine();
 
-        livroRepository.findByTitulo(titulo)
+        livroRepository.findByTituloIgnoreCase(titulo)
                 .ifPresentOrElse(
                         System.out::println,
-                        () -> System.out.println("Não há livros cadastrados com esse título.")
-                );
+                        () -> System.out.println("Não há livros cadastrados com esse título."));
+    }
 
+    private void listarLivrosCadastrados(){
+        System.out.println("\nEstes são os livros cadastrados: ");
+        List<Livro> livrosCadastrados = livroRepository.findAll();
+        livrosCadastrados
+                .forEach(System.out::println);
+    }
 
+    private void listarAutoresCadastrados(){
+        System.out.println("\nEstes são os autores cadastrados: ");
 
+        List<Autor> autores = autorRepository.findAll();
+        toFormattedString(autores);
 
     }
 
+
+
+    private void toFormattedString(List<Autor> autores){
+        autores.stream()
+                .map(a -> a.toString().concat("\n-> Livro(s): ")
+                        .concat(String.join(", ",
+                                livroRepository.titulosLivroPorAutor(a.getNome())))
+                        .concat("\n-------------------------------------"))
+                .forEach(System.out::println);
+    }
 
 }
