@@ -17,7 +17,6 @@ public class LiteraluraApplication implements CommandLineRunner {
 	@Autowired
 	AutorRepository autorRepository;
 
-
 	public static void main(String[] args) {
 		SpringApplication.run(LiteraluraApplication.class, args);
 	}

@@ -1,6 +1,5 @@
 package com.alura.literalura.repository;
 
-import com.alura.literalura.dto.LivroDTO;
 import com.alura.literalura.model.Livro;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +9,7 @@ import java.util.Optional;
 
 public interface LivroRepository extends JpaRepository<Livro, Long> {
 
-    Optional<Livro> findByTituloIgnoreCase(String titulo);
+    Optional<Livro> findByTituloIgnoreCaseContaining(String titulo);
 
     @Query("""
     SELECT l.titulo
@@ -19,5 +18,12 @@ public interface LivroRepository extends JpaRepository<Livro, Long> {
     WHERE a.nome ILIKE %:nomeAutor%
     """)
     List<String> titulosLivroPorAutor(String nomeAutor);
+
+    @Query("""
+    SELECT l
+    FROM Livro l
+    WHERE l.idioma LIKE :idioma
+    """)
+    List<Livro> livrosPorIdioma(String idioma);
 
 }
